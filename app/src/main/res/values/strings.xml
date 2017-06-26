@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">IndoorLocalization</string>
+    <string name="frame">帧率:</string>
+    <string name="frame_unit">帧/s</string>
+    <string name="bit_rate">比特率:</string>
+    <string name="bit_rate_unit">Mbit/s</string>
+    <string name="error">参数错误！</string>
 </resources>
