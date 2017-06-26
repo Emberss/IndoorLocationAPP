@@ -1,4 +1,4 @@
-package com.project.indoorlocalization;
+package com.project.indoorlocalization.activity;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -9,16 +9,18 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.os.SystemClock;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.TextureView;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.project.indoorlocalization.R;
+import com.project.indoorlocalization.utils.SensorUtil;
+import com.project.indoorlocalization.utils.Utils;
 
 import org.json.JSONArray;
 import org.json.JSONException;

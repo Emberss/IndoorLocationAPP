@@ -1,4 +1,4 @@
-package com.project.indoorlocalization;
+package com.project.indoorlocalization.utils;
 
 import android.Manifest;
 import android.app.Activity;

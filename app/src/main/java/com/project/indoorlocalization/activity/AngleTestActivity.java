@@ -1,4 +1,4 @@
-package com.project.indoorlocalization;
+package com.project.indoorlocalization.activity;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -8,6 +8,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import com.project.indoorlocalization.R;
+import com.project.indoorlocalization.utils.SensorUtil;
 
 /**
  * Created by ljm on 2017/5/13.

@@ -1,4 +1,4 @@
-package com.project.indoorlocalization;
+package com.project.indoorlocalization.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,6 +6,8 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
+
+import com.project.indoorlocalization.R;
 
 /**
  * Created by ljm on 2017/5/4.

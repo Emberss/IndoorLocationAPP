@@ -1,4 +1,4 @@
-package com.project.indoorlocalization;
+package com.project.indoorlocalization.http;
 
 import android.widget.ListView;
 

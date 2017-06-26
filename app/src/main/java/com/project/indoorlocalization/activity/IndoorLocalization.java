@@ -1,11 +1,10 @@
-package com.project.indoorlocalization;
+package com.project.indoorlocalization.activity;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
-import android.hardware.Sensor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,6 +15,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.project.indoorlocalization.R;
+import com.project.indoorlocalization.http.Http;
+import com.project.indoorlocalization.utils.SensorUtil;
 
 /**
  * Created by ljm on 2017/4/13.
@@ -30,7 +33,7 @@ public class IndoorLocalization extends AppCompatActivity {
     public void onCreate(@Nullable Bundle onSaveInstanceState) {
         super.onCreate(onSaveInstanceState);
 
-        setContentView(R.layout.layout_main);
+        setContentView(R.layout.layout_main_v0);
 
         initView();
         initData();
