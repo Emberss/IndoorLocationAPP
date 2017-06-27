@@ -60,6 +60,7 @@ public class TakePictureActivity extends AppCompatActivity implements View.OnCli
         clearView.setOnClickListener(this);
         uploadView.setOnClickListener(this);
         previewView.setOnClickListener(this);
+        imgCountView.setText(Data.imgs.size()+"");
 
         takePictureView.setOnClickListener(new View.OnClickListener() {
             @Override
