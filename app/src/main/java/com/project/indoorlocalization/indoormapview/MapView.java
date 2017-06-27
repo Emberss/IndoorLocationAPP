@@ -510,7 +510,7 @@ public class MapView extends View {
                 Rect rect = mScreenRect;
                 if (!rect.isEmpty()) {
                     Options options = new Options();
-                    options.inSampleSize = dealSampeSize(
+                    options.inSampleSize = dealSampleSize(
                             rect.right - rect.left, rect.bottom - rect.top);
                     mDetailBitmap = mMapDecoder.decodeRegion(rect, options);
                     mDetailMapMatrix = new Matrix();
@@ -531,7 +531,7 @@ public class MapView extends View {
         });
     }
 
-    private int dealSampeSize(int width, int height) {
+    private int dealSampleSize(int width, int height) {
         int inSampleSize = (int) Math.ceil(1f / mScale);
         long freeMem = Runtime.getRuntime().maxMemory()
                 - (Runtime.getRuntime().totalMemory() - Runtime.getRuntime()

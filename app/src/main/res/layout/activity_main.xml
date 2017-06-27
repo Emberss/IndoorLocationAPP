@@ -20,4 +20,14 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="20dp" />
+
+    <ImageView
+        android:id="@+id/take_picture"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_centerHorizontal="true"
+        android:src="@mipmap/camera"
+        android:scaleType="center"
+        android:layout_alignParentBottom="true">
+    </ImageView>
 </RelativeLayout>

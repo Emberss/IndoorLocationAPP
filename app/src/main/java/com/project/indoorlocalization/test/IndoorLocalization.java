@@ -1,4 +1,4 @@
-package com.project.indoorlocalization.activity;
+package com.project.indoorlocalization.test;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -19,6 +19,8 @@ import android.widget.Toast;
 import com.project.indoorlocalization.R;
 import com.project.indoorlocalization.http.Http;
 import com.project.indoorlocalization.utils.SensorUtil;
+import com.project.indoorlocalization.utils.UriPath;
+import com.project.indoorlocalization.utils.Utils;
 
 /**
  * Created by ljm on 2017/4/13.
@@ -122,14 +124,15 @@ public class IndoorLocalization extends AppCompatActivity {
         super.onActivityResult(requestcode, resultCode, data);
         if (resultCode == Activity.RESULT_OK && data != null) {
             Uri uri = data.getData();
-            ContentResolver cv = getContentResolver();
-            Cursor cursor = cv.query(uri, null, null, null, null);
-            if (cursor != null) {
-                cursor.moveToFirst();
-                mImagePath = cursor.getString(cursor.getColumnIndex("_data"));
+            String p = UriPath.getImageAbsolutePath(this, uri);
+//            ContentResolver cv = getContentResolver();
+//            Cursor cursor = cv.query(uri, null, null, null, null);
+            //if (cursor != null) {
+//                cursor.moveToFirst();
+                mImagePath = p;//cursor.getString(cursor.getColumnIndex("_data"));
                 imagepath.setText(mImagePath);
-                cursor.close();
-            }
+//                cursor.close();
+            //}
         }
     }
 

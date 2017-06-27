@@ -4,10 +4,14 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +28,28 @@ public class Utils {
         } else {
             toast.setText(msg);
             toast.show();
+        }
+    }
+
+    //保存图片
+    public static void saveBitmap(Bitmap bitmap, String path, String name) {
+        if (bitmap == null) return;
+
+        File dir = new File(path);
+        if (!dir.exists()) {
+            dir.mkdir();
+        }
+
+        File file = new File(path+"/"+name);
+        try {
+            file.createNewFile();
+
+            FileOutputStream outputStream = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, outputStream);
+            outputStream.flush();
+            outputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -47,6 +73,32 @@ public class Utils {
                 //startActivity(intent);
             } else {
                 ActivityCompat.requestPermissions(context, NO_VIDEO_PERMISSION.toArray(new String[NO_VIDEO_PERMISSION.size()]), REQUEST_CAMERA);
+            }
+        } else {
+            //Intent intent = new Intent(this, RecordVideoActivity.class);
+            //startActivity(intent);
+        }
+    }
+
+    //拍照上传需要的权限(相机，录音，外部存储)
+    private static String[] VIDEO_PERMISSION2 = {
+            Manifest.permission.CAMERA
+    };
+    private static List<String> NO_VIDEO_PERMISSION2 = new ArrayList<String>();
+    private static final int REQUEST_CAMERA2 = 0;
+    public static void checkTakePicturePermission(Activity context) {
+        NO_VIDEO_PERMISSION2.clear();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            for (int i = 0; i < VIDEO_PERMISSION2.length; i++) {
+                if (ActivityCompat.checkSelfPermission(context, VIDEO_PERMISSION2[i]) != PackageManager.PERMISSION_GRANTED) {
+                    NO_VIDEO_PERMISSION2.add(VIDEO_PERMISSION2[i]);
+                }
+            }
+            if (NO_VIDEO_PERMISSION2.size() == 0) {
+                //Intent intent = new Intent(this, RecordVideoActivity.class);
+                //startActivity(intent);
+            } else {
+                ActivityCompat.requestPermissions(context, NO_VIDEO_PERMISSION2.toArray(new String[NO_VIDEO_PERMISSION2.size()]), REQUEST_CAMERA2);
             }
         } else {
             //Intent intent = new Intent(this, RecordVideoActivity.class);

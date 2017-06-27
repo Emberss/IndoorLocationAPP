@@ -1,4 +1,4 @@
-package com.project.indoorlocalization.activity;
+package com.project.indoorlocalization.test;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.project.indoorlocalization.R;
+import com.project.indoorlocalization.activity.MainActivity;
 
 /**
  * Created by ljm on 2017/5/4.
@@ -21,9 +22,10 @@ public class StartActivity extends AppCompatActivity {
 
         TextView upload_info = (TextView)findViewById(R.id.upload_info);
         TextView media_recorder = (TextView)findViewById(R.id.media_recorder);
+        TextView index = (TextView)findViewById(R.id.index);
         TextView test = (TextView)findViewById(R.id.test);
 
-        if (upload_info == null || media_recorder == null || test == null) return;
+        if (upload_info == null || media_recorder == null || test == null || index == null) return;
         upload_info.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -42,6 +44,13 @@ public class StartActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(StartActivity.this, AngleTestActivity.class);
+                startActivity(intent);
+            }
+        });
+        index.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(StartActivity.this, MainActivity.class);
                 startActivity(intent);
             }
         });

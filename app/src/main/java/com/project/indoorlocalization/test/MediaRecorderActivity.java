@@ -1,7 +1,9 @@
-package com.project.indoorlocalization.activity;
+package com.project.indoorlocalization.test;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.media.MediaRecorder;
@@ -37,14 +39,14 @@ import java.util.List;
  * Created by ljm on 2017/5/4.
  */
 public class MediaRecorderActivity extends AppCompatActivity{
-    private TextView record, mCurrTimeView;
+    private TextView record, mCurrTimeView, reset;
     private TextView mSettingView, mFrameView, mBitRateView;
     //private ImageView preview;
     private final String START = "开始拍摄";
     private final String END = "结束拍摄";
 
     private int mWidth = 1920, mHeight = 1080;
-    private int mFrameRate = 30, mBitRate = 10;
+    private int mFrameRate = 5, mBitRate = 10;
     private long mCurrTime = 0;     //录像计时器
     private boolean isRecord = false;
 
@@ -60,6 +62,7 @@ public class MediaRecorderActivity extends AppCompatActivity{
     private List<Integer> frame_num_list;
     private List<float[]> ori_data_list, acc_data_list, mag_data_list, gyr_data_list;
     private List<Float> angle_diff_list;
+    private List<Bitmap> frame_list;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,9 +76,13 @@ public class MediaRecorderActivity extends AppCompatActivity{
         mSettingView = (TextView)findViewById(R.id.setting);
         mFrameView = (TextView)findViewById(R.id.frame);
         mBitRateView = (TextView)findViewById(R.id.bit_rate);
+        reset = (TextView)findViewById(R.id.reset);
 
         initData();
         setTextureListener();
+
+        SharedPreferences preferences = getSharedPreferences("data", MODE_PRIVATE);
+        frame_num = preferences.getInt("frame_num", 0);
     }
 
     private void initData() {
@@ -92,6 +99,15 @@ public class MediaRecorderActivity extends AppCompatActivity{
                     stopRecord();
                     isRecord = false;
                 }
+            }
+        });
+        reset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SharedPreferences preferences = getSharedPreferences("data", MODE_PRIVATE);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putInt("frame_num", 0);
+                editor.apply();
             }
         });
         mSettingView.setOnClickListener(new View.OnClickListener() {
@@ -113,6 +129,9 @@ public class MediaRecorderActivity extends AppCompatActivity{
         mag_data_list = new ArrayList<>();
         acc_data_list = new ArrayList<>();
         gyr_data_list = new ArrayList<>();
+        frame_list = new ArrayList<>();
+
+        Utils.checkCameraPermission(this);
     }
 
     private void showSettingDialog() {
@@ -131,7 +150,7 @@ public class MediaRecorderActivity extends AppCompatActivity{
                 }
                 int num1 = Integer.parseInt(frame.getText().toString());
                 int num2 = Integer.parseInt(bit_rate.getText().toString());
-                if (num1 < 10 || num1 > 30 || num2 < 5 || num2 > 20) {
+                if (num1 < 3 || num1 > 30 || num2 < 5 || num2 > 20) {
                     Utils.setToast(MediaRecorderActivity.this, getString(R.string.error));
                 } else {
                     mFrameRate = num1;
@@ -157,6 +176,7 @@ public class MediaRecorderActivity extends AppCompatActivity{
             @Override
             public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
                 initCamera();
+                if (mCamera == null) return;
                 try {
                     mCamera.setPreviewTexture(surface);
                     mCamera.startPreview();
@@ -175,6 +195,24 @@ public class MediaRecorderActivity extends AppCompatActivity{
             @Override
             public void onSurfaceTextureUpdated(SurfaceTexture surface) {
                 if (!isRecord) return;
+//                Utils.setToast(MediaRecorderActivity.this,outputFile.getAbsolutePath()+ mCurrFrameNum+"");
+                //frame_list.add(mTextureView.getBitmap());
+                //new Thread(new Runnable() {
+               //     @Override
+               //     public void run() {
+                        Utils.saveBitmap(mTextureView.getBitmap(), outputFile.getAbsolutePath()+"/"+frame_num, mCurrFrameNum+".png");
+
+               //     }
+              //  }).start();
+//                if (frame_list.size() > 10) {
+//                    new Thread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            saveFrameImg();
+//                            //Utils.saveBitmap(mTextureView.getBitmap(), outputFile.getAbsolutePath()+"/img", mCurrFrameNum+".png");
+//                        }
+//                    }).start();
+//                }
 
                 //Utils.setToast(MediaRecorderActivity.this, "ss");
 
@@ -191,13 +229,8 @@ public class MediaRecorderActivity extends AppCompatActivity{
                 mag_data_list.add(sensorUtil.getMagData(0));
                 gyr_data_list.add(sensorUtil.getGyrData(0));
 
-//                if (frame0_gyrData != null) {
-//                    float[] tmp = new float[3];
-//                    tmp[0] = data[0] - frame0_gyrData[0];
-//                    tmp[1] = data[1] - frame0_gyrData[1];
-//                    tmp[2] = data[2] - frame0_gyrData[2];
-//                    angle_diff_list.add(tmp);
-//                }
+
+
                 ++mCurrFrameNum;
             }
         });
@@ -206,14 +239,16 @@ public class MediaRecorderActivity extends AppCompatActivity{
     private void initCamera() {
         try {
             mCamera = Camera.open(Camera.CameraInfo.CAMERA_FACING_BACK);
+
+            if (mCamera == null) return;
+            Camera.Parameters parameters = mCamera.getParameters();
+            parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+            mCamera.setDisplayOrientation(0);
+            mCamera.cancelAutoFocus();
+            mCamera.setParameters(parameters);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Camera.Parameters parameters = mCamera.getParameters();
-        parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
-        mCamera.setDisplayOrientation(0);
-        mCamera.cancelAutoFocus();
-        mCamera.setParameters(parameters);
     }
 
     private void initRecorder() {
@@ -221,7 +256,11 @@ public class MediaRecorderActivity extends AppCompatActivity{
 
         mediaRecorder = new MediaRecorder();
         mediaRecorder.reset();
-        mCamera.unlock();
+        try {
+            mCamera.unlock();
+        } catch (RuntimeException r) {
+            r.printStackTrace();
+        }
         mediaRecorder.setCamera(mCamera);
         mediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
@@ -245,7 +284,8 @@ public class MediaRecorderActivity extends AppCompatActivity{
         if (!dir.exists()) dir.mkdir();
         try {
             String name = new Date(System.currentTimeMillis()).toString();
-            outputFile = new File(dir, name + ".mp4");
+            //outputFile = new File(dir, name + ".mp4");
+            outputFile = new File(dir,"");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -253,7 +293,13 @@ public class MediaRecorderActivity extends AppCompatActivity{
 
     private void startRecord() {
         initRecorder();
-        mediaRecorder.start();
+
+        try {
+            mediaRecorder.prepare();
+            mediaRecorder.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         countTime();
         sensorUtil.init();
@@ -286,6 +332,16 @@ public class MediaRecorderActivity extends AppCompatActivity{
                 handler.sendMessage(msg);
             }
         }).start();
+    }
+
+    private int frame_num = 0;
+    private void saveFrameImg() {
+        for (int i = 0; i < frame_list.size(); ++i) {
+            Utils.saveBitmap(frame_list.get(i), outputFile.getAbsolutePath()+"/img", frame_num+".png");
+            frame_list.get(i).recycle();
+            ++frame_num;
+        }
+        frame_list.clear();
     }
 
     private boolean saveData() {
@@ -353,7 +409,7 @@ public class MediaRecorderActivity extends AppCompatActivity{
 
             File dir = new File(Environment.getExternalStorageDirectory()+File.separator+"sampleVideo/");
             String name = new Date(System.currentTimeMillis()).toString()+"("+(mCurrFrameNum-1)+"帧)";
-            name += (System.currentTimeMillis() % 10000);   //防止视频文件重名
+            name += frame_num; //(System.currentTimeMillis() % 10000);   //防止视频文件重名
             File newFile = new File(dir, name + ".mp4");
             outputFile.renameTo(newFile);
 
@@ -403,6 +459,11 @@ public class MediaRecorderActivity extends AppCompatActivity{
                 boolean flag = (boolean)msg.obj;
                 if (flag) {
                     Utils.setToast(MediaRecorderActivity.this, "保存成功！");
+                    ++frame_num;
+                    SharedPreferences preferences = getSharedPreferences("data", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putInt("frame_num", frame_num);
+                    editor.apply();
                 } else {
                     Utils.setToast(MediaRecorderActivity.this, "保存失败！");
                 }

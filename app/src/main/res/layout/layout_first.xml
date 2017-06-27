@@ -35,6 +35,17 @@
         android:layout_marginTop="10dp"
         android:textColor="@color/white"
         android:background="@drawable/round_button"/>
+    <TextView
+        android:id="@+id/index"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:text="首页"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/white"
+        android:background="@drawable/round_button"/>
 
     <LinearLayout
         android:layout_width="match_parent"

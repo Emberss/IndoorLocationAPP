@@ -68,7 +68,20 @@
             android:gravity="center"
             android:background="@drawable/settting"/>
     </LinearLayout>
-
+    <TextView
+        android:id="@+id/reset"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="reset"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
+        android:layout_marginTop="5dp"
+        android:textColor="@color/white"
+        android:gravity="center"
+        android:layout_gravity="end"
+        android:background="@drawable/settting"/>
     <!--<ImageView-->
         <!--android:id="@+id/preview"-->
         <!--android:layout_width="80dp"-->

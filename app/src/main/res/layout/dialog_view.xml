@@ -23,7 +23,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:hint="范围10~30"
+            android:hint="范围3~30"
             android:background="@drawable/bg_edittext"
             android:inputType="number"
             android:layout_margin="5dp"

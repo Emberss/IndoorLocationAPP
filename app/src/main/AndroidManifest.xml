@@ -18,17 +18,22 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".activity.MainActivity">
+        <activity android:name=".test.StartActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".activity.MediaRecorderActivity"
+        <activity android:name=".activity.MainActivity"/>
+        <activity
+            android:screenOrientation="landscape"
+            android:name=".activity.TakePictureActivity"/>
+
+        <activity android:name=".test.MediaRecorderActivity"
             android:screenOrientation="landscape"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
-        <activity android:name=".activity.IndoorLocalization"/>
-        <activity android:name=".activity.AngleTestActivity"/>
+        <activity android:name=".test.IndoorLocalization"/>
+        <activity android:name=".test.AngleTestActivity"/>
     </application>
 
 </manifest>
