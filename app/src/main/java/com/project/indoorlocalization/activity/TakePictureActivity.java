@@ -185,4 +185,10 @@ public class TakePictureActivity extends AppCompatActivity implements View.OnCli
             e.printStackTrace();
         }
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        imgCountView.setText(Data.imgs.size()+"");
+    }
 }

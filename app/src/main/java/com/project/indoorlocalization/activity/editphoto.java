@@ -107,7 +107,7 @@ public class editphoto extends Activity {
                     }
                 });
                 builder.create().show();
-                return false;
+                return true;
             }
         });
     }

@@ -34,8 +34,7 @@
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
         <activity android:name=".test.IndoorLocalization"/>
         <activity android:name=".test.AngleTestActivity"/>
-        <activity android:name=".activity.editphoto"
-            android:screenOrientation="landscape"/>
+        <activity android:name=".activity.editphoto"/>
     </application>
 
 </manifest>
