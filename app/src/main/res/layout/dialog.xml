@@ -2,15 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <ImageView
-        android:paddingTop="10dp"
-        android:id="@+id/image"
+        android:id="@+id/dialog"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:adjustViewBounds="true"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        />
-
-
+        android:layout_height="match_parent" />
 </LinearLayout>

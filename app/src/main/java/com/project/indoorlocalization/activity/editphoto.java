@@ -22,6 +22,7 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import com.project.indoorlocalization.R;
+import com.project.indoorlocalization.utils.Data;
 
 /**
  * Created by Embers on 2017/6/26.
@@ -47,7 +48,7 @@ public class editphoto extends Activity {
         setContentView(R.layout.edit_photo);
 
         ImageView imageView = (ImageView) findViewById(R.id.back);
-
+        imageView.setAlpha(70);
         // 通过findviewByID获取到ListView对象
         mListView = (ListView) findViewById(R.id.listView1);
 
@@ -65,7 +66,8 @@ public class editphoto extends Activity {
         }
             // 将MainListAdapter对象传递给ListView视图
             mListView.setAdapter(adapter);
-            setOnItemClickListene();
+            setOnItemLongClickListene();
+            setOnItemClick();
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -76,10 +78,11 @@ public class editphoto extends Activity {
 
     }
 
-    public void setOnItemClickListene() {
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+    public void setOnItemLongClickListene() {
+        mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, final int i, long l) {
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                final int index = i;
                 AlertDialog.Builder builder = new AlertDialog.Builder(editphoto.this);
 
                 builder.setMessage("确认删除吗");
@@ -97,17 +100,31 @@ public class editphoto extends Activity {
                     @Override
                     public void onClick(DialogInterface arg0, int arg1) {
                         // TODO Auto-generated method stub
-                        mList.remove(i);
+                        Data.imgs.remove(index);
+                        mList.remove(index);
                         adapter.notifyDataSetChanged();
                         arg0.dismiss();
                     }
                 });
                 builder.create().show();
+                return false;
             }
         });
     }
 
-
+    public void setOnItemClick() {
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                AlertDialog alertDialog = new AlertDialog.Builder(editphoto.this).create();
+                View view1 = LayoutInflater.from(editphoto.this).inflate(R.layout.dialog,null);
+                ImageView imageView = (ImageView)view1.findViewById(R.id.dialog);
+                imageView.setImageBitmap(Data.imgs.get(i));
+                alertDialog.setView(view1);
+                alertDialog.show();
+            }
+        });
+    }
 
     /**
      * 定义ListView适配器MainListViewAdapter
@@ -159,8 +176,7 @@ public class editphoto extends Activity {
                 listItemView = new ListItemView();
                 listItemView.imageView = (ImageView) convertView
                         .findViewById(R.id.image);
-                listItemView.textView = (TextView) convertView
-                        .findViewById(R.id.title);
+
 
                 // 将ListItemView对象传递给convertView
                 convertView.setTag(listItemView);
@@ -171,11 +187,11 @@ public class editphoto extends Activity {
 
             // 获取到mList中指定索引位置的资源
             Bitmap img = mList.get(position).getImage();
-            String title = mList.get(position).getTitle();
+
 
             // 将资源传递给ListItemView的两个域对象
             listItemView.imageView.setImageBitmap(img);
-            listItemView.textView.setText(title);
+
 
             // 返回convertView对象
             return convertView;
@@ -188,7 +204,7 @@ public class editphoto extends Activity {
      */
     class ListItemView {
         ImageView imageView;
-        TextView textView;
+
     }
 
     /**
@@ -196,7 +212,7 @@ public class editphoto extends Activity {
      */
     class ListItem {
         private Bitmap image;
-        private String title;
+
 
         public Bitmap getImage() {
             return image;
@@ -206,13 +222,7 @@ public class editphoto extends Activity {
             this.image = image;
         }
 
-        public String getTitle() {
-            return title;
-        }
 
-        public void setTitle(String title) {
-            this.title = title;
-        }
 
     }
 
