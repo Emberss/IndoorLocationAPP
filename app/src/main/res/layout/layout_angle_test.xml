@@ -25,11 +25,24 @@
             android:layout_height="wrap_content"
             android:text=""/>
     </LinearLayout>
-    <Button
-        android:id="@+id/reset"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="重置"/>
+        android:gravity="center">
+        <EditText
+            android:id="@+id/ip"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="45dp"
+            android:hint="ip地址"
+            android:gravity="center"/>
+        <Button
+            android:id="@+id/reset"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="修改"/>
+    </LinearLayout>
     <Button
         android:id="@+id/save"
         android:layout_width="wrap_content"

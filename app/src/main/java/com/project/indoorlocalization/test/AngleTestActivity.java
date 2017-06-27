@@ -15,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.project.indoorlocalization.R;
@@ -33,6 +34,7 @@ public class AngleTestActivity extends AppCompatActivity implements View.OnClick
     private TextView mImg1View;
     private TextView mImg2View;
     private TextView mImg3View;
+    private EditText editText;
 
     private String path1="", path2="", path3="";
     private ProgressDialog dialog;
@@ -47,6 +49,7 @@ public class AngleTestActivity extends AppCompatActivity implements View.OnClick
         mImg1View = (TextView)findViewById(R.id.img1);
         mImg2View = (TextView)findViewById(R.id.img2);
         mImg3View = (TextView)findViewById(R.id.img3);
+        editText = (EditText)findViewById(R.id.ip);
         reset = (Button) findViewById(R.id.reset);
         save = (Button) findViewById(R.id.save);
         sensorUtil = new SensorUtil(this);
@@ -89,10 +92,16 @@ public class AngleTestActivity extends AppCompatActivity implements View.OnClick
         reset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sensorUtil.init();
-                mAngleView.setText("");
+//                sensorUtil.init();
+//                mAngleView.setText("");
 
                 //handler.sendEmptyMessageDelayed(0, 500);
+                if (editText.getText() == null || editText.getText().length() == 0) {
+                    Utils.setToast(AngleTestActivity.this, "ip地址不能为空！");
+                } else {
+                    Http.updateIP(editText.getText().toString());
+                    Utils.setToast(AngleTestActivity.this, "修改成功！");
+                }
             }
         });
         save.setOnClickListener(new View.OnClickListener() {

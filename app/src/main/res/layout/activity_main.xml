@@ -26,8 +26,7 @@
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_centerHorizontal="true"
-        android:src="@mipmap/camera"
-        android:scaleType="center"
+        android:src="@drawable/camera_selector"
         android:layout_alignParentBottom="true">
     </ImageView>
 </RelativeLayout>

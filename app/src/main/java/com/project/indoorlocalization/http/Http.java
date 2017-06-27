@@ -32,10 +32,16 @@ import java.util.List;
  * Created by ljm on 2017/4/13.
  */
 public class Http {
-    private static final String base = "http://192.168.191.1:8080/IndoorLocServer";
+    public static String ip = "172.19.128.222";
+    public static String base = "http://"+ip+":8080/IndoorLocServer";
     //"http://120.25.91.6:8080/IndoorLocServer"
     private static final String url1 = "/uploadSensorMsg";
     private static final String url2 = "/uploadimage";
+
+    public static void updateIP(String s) {
+        ip = s;
+        base = "http://"+ip+":8080/IndoorLocServer";
+    }
 
     public static String uploadInfo(String [] paths, Context context) {
         List<String> keys = new ArrayList<>(), values = new ArrayList<>();
