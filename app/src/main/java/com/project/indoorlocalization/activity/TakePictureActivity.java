@@ -1,6 +1,7 @@
 package com.project.indoorlocalization.activity;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
@@ -90,6 +91,8 @@ public class TakePictureActivity extends AppCompatActivity implements View.OnCli
             case R.id.upload:
                 break;
             case R.id.preview:
+                Intent  intent = new Intent(TakePictureActivity.this, editphoto.class);
+                startActivity(intent);
                 break;
         }
     }
@@ -152,6 +155,8 @@ public class TakePictureActivity extends AppCompatActivity implements View.OnCli
         textureView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (camera == null)
+                    return;
                 camera.autoFocus(new Camera.AutoFocusCallback() {
                     @Override
                     public void onAutoFocus(boolean b, Camera camera) {
