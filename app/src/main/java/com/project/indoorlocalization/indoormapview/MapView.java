@@ -15,6 +15,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -23,6 +24,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.project.indoorlocalization.R;
+import com.project.indoorlocalization.utils.Utils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -278,7 +280,7 @@ public class MapView extends View {
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
             case MotionEvent.ACTION_DOWN:
-
+                //Utils.setToast(mContext, "aa");
                 float[] xy = {event.getX(), event.getY()};
                 xy = transformToMapCoordinate(xy);
                 if (mRealLocationSymbol.isPointInClickRect(xy[0], xy[1])
@@ -318,6 +320,8 @@ public class MapView extends View {
                             calScreenRect();
                             Log.v("onTouch", "trans:" + delX + "," + delY + " matrix:" + mMapMatrix.toShortString());
                             onTranslate(delX, delY, mMapMatrix, mScale);
+
+                            //Utils.setToast(mContext, delX+" "+delY);
                         } else {
                             Position curPos = new Position();
                             float delX = event.getX() - mPreviousTouchPoints[0].x;
@@ -330,6 +334,7 @@ public class MapView extends View {
                             curPos.setX(mapPos[0]);
                             curPos.setY(mapPos[1]);
                             mRealLocationSymbol.setLocation(curPos);
+                            mMyLocationSymbol.setLocation(curPos);
 
                             if (mOnRealLocationMoveListener != null) {
                                 mOnRealLocationMoveListener.onMove(curPos);
@@ -405,10 +410,15 @@ public class MapView extends View {
             if (mMyLocationSymbol != null
                     && mMyLocationSymbol.getLocation() != null) {
                 mMyLocationSymbol.draw(canvas, mMapMatrix, mScale);
+
+                //Utils.setToast(context, mMyLocationSymbol.getLocation().getX()+" "+mMyLocationSymbol.getLocation().getY());
+                //Log.v("#####loc: ", mMyLocationSymbol.getLocation().getX()+" "+mMyLocationSymbol.getLocation().getY());
             }
 
             if (mRealLocationSymbol != null && mRealLocationSymbol.getLocation() != null) {
                 mRealLocationSymbol.draw(canvas, mMapMatrix, mScale);
+
+                //Utils.setToast(context, "bb");
             }
         } else {
             canvas.drawColor(getResources().getColor(
@@ -606,7 +616,9 @@ public class MapView extends View {
             initMatrix.postScale((float) scale / mInitScale, (float) scale
                     / mInitScale);
             initMatrix.postRotate((float) rotation - mInitRotation);
+            //initMatrix.postTranslate(10, -10);
             mMapMatrix = initMatrix;
+            //mMapMatrix.postTranslate(0, 33);
             refreshDetailBitmap();
             invalidate();
             mInitScale = (float) scale;
@@ -646,6 +658,7 @@ public class MapView extends View {
     public void updateMyLocation(Position location) {
         if (mMyLocationSymbol.getLocation() == null) {
             mMyLocationSymbol.setLocation(location);
+            mRealLocationSymbol.setLocation(location);
             centerMyLocation();
         } else {
             if (mUpdateMyLocationAnimRunnable == null) {
@@ -694,8 +707,22 @@ public class MapView extends View {
         }
     }
 
-    private Size getScreenSize(Context context) {
-        DisplayMetrics dm = context.getResources().getDisplayMetrics();
-        return new Size(dm.widthPixels, dm.heightPixels);
+//    private Size getScreenSize(Context context) {
+//        DisplayMetrics dm = context.getResources().getDisplayMetrics();
+//        return new Size(dm.widthPixels, dm.heightPixels);
+//    }
+
+
+
+
+
+//    private Context context;
+//    public void setContext(Context c) {this.context = c;}
+
+    public void ff(){
+        mMapMatrix.postTranslate(0, -300);
+        calScreenRect();
+
+        invalidate();
     }
 }

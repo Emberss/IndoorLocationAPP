@@ -29,7 +29,7 @@ import com.project.indoorlocalization.utils.Utils;
  */
 public class AngleTestActivity extends AppCompatActivity implements View.OnClickListener{
     private SensorUtil sensorUtil;
-    private Button reset, save;
+    private Button reset, save, button;
     private TextView mAngleView;
     private TextView mImg1View;
     private TextView mImg2View;
@@ -51,6 +51,7 @@ public class AngleTestActivity extends AppCompatActivity implements View.OnClick
         mImg3View = (TextView)findViewById(R.id.img3);
         editText = (EditText)findViewById(R.id.ip);
         reset = (Button) findViewById(R.id.reset);
+        button = (Button) findViewById(R.id.button);
         save = (Button) findViewById(R.id.save);
         sensorUtil = new SensorUtil(this);
 
@@ -104,6 +105,12 @@ public class AngleTestActivity extends AppCompatActivity implements View.OnClick
                 }
             }
         });
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Http.reset();
+            }
+        });
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -113,7 +120,12 @@ public class AngleTestActivity extends AppCompatActivity implements View.OnClick
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        String s = Http.uploadInfo(new String[]{path1, path2, path3},AngleTestActivity.this);
+                        String[] sensorInfos = new String[4];
+                        sensorInfos[0] = sensorUtil.getAccData();
+                        sensorInfos[1] = sensorUtil.getGyrData();
+                        sensorInfos[2] = sensorUtil.getMagData();
+                        sensorInfos[3] = sensorUtil.getOriData();
+                        String s = Http.uploadImgs(sensorInfos,new String[]{"0","0"}, new String[]{path1, path2, path3});
                         Message message = Message.obtain();
                         message.obj = s;
                         message.what = 1;

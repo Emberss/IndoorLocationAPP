@@ -9,6 +9,9 @@ import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -51,6 +54,45 @@ public class Utils {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static String parseSensorInfo(float[] acc_data, float[] mag_data, float[] ori_data,
+                                         float[] gyr_data) {
+        if (acc_data == null || mag_data == null || ori_data == null || gyr_data == null) {
+            return "";
+        }
+
+        JSONObject acc_object = new JSONObject();
+        JSONObject mag_object = new JSONObject();
+        JSONObject ori_object = new JSONObject();
+        JSONObject gyr_object = new JSONObject();
+
+        JSONObject tmp = new JSONObject();
+        try {
+            acc_object.put("x", acc_data[0]);
+            acc_object.put("y", acc_data[1]);
+            acc_object.put("z", acc_data[2]);
+
+            mag_object.put("x", mag_data[0]);
+            mag_object.put("y", mag_data[1]);
+            mag_object.put("z", mag_data[2]);
+
+            ori_object.put("x", ori_data[0]);
+            ori_object.put("y", ori_data[1]);
+            ori_object.put("z", ori_data[2]);
+
+            gyr_object.put("x", gyr_data[0]);
+            gyr_object.put("y", gyr_data[1]);
+            gyr_object.put("z", gyr_data[2]);
+
+            tmp.put("acc_data", acc_object);
+            tmp.put("mag_data", mag_object);
+            tmp.put("ori_data", ori_object);
+            tmp.put("gyr_data", gyr_object);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return tmp.toString();
     }
 
     //视频录制需要的权限(相机，录音，外部存储)

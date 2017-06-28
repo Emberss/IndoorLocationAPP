@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">IndoorLocalization</string>
+    <string name="app_name">室内定位APP</string>
     <string name="frame">帧率:</string>
     <string name="frame_unit">帧/s</string>
     <string name="bit_rate">比特率:</string>

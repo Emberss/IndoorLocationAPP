@@ -32,7 +32,8 @@ import java.util.List;
  * Created by ljm on 2017/4/13.
  */
 public class Http {
-    public static String ip = "172.19.128.222";
+    private static String ip0 = "192.168.191.1";
+    public static String ip = "192.168.191.1";
     public static String base = "http://"+ip+":8080/IndoorLocServer";
     //"http://120.25.91.6:8080/IndoorLocServer"
     private static final String url1 = "/uploadSensorMsg";
@@ -43,9 +44,25 @@ public class Http {
         base = "http://"+ip+":8080/IndoorLocServer";
     }
 
-    public static String uploadInfo(String [] paths, Context context) {
+    public static void reset() {
+        ip = ip0;
+        base = "http://"+ip+":8080/IndoorLocServer";
+    }
+
+    public static String uploadImgs(String[] sensorInfos, String[] angles, String [] paths) {
         List<String> keys = new ArrayList<>(), values = new ArrayList<>();
         List<String> img_keys = new ArrayList<>(), img_paths = new ArrayList<>();
+        keys.add("img1");
+        keys.add("img2");
+        keys.add("img3");
+        values.add(sensorInfos[0]);
+        values.add(sensorInfos[1]);
+        values.add(sensorInfos[2]);
+        keys.add("angle1");
+        keys.add("angle2");
+        values.add(angles[0]);
+        values.add(angles[1]);
+
         img_keys.add("a");
         img_keys.add("b");
         img_keys.add("c");

@@ -1,11 +1,14 @@
 package com.project.indoorlocalization.activity;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -15,11 +18,15 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.project.indoorlocalization.R;
+import com.project.indoorlocalization.http.Http;
 import com.project.indoorlocalization.utils.Data;
+import com.project.indoorlocalization.utils.SensorUtil;
 import com.project.indoorlocalization.utils.Utils;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.Date;
+import java.util.List;
 
 /**
  * Created by ljm on 2017/6/27.
@@ -33,6 +40,12 @@ public class TakePictureActivity extends AppCompatActivity implements View.OnCli
     private Camera camera;
     private TextureView textureView;
 
+    private SensorUtil sensorUtil;
+    private float angle1, angle2;
+    private String img_sensor1,img_sensor2,img_sensor3;
+    private String[] img_path = new String[3];
+
+    private ProgressDialog dialog;
 //    private int img_count = 0;
 
     @Override
@@ -51,7 +64,12 @@ public class TakePictureActivity extends AppCompatActivity implements View.OnCli
         previewView = (TextView)findViewById(R.id.preview);
         textureView = (TextureView)findViewById(R.id.textureView);
 
+        dialog = new ProgressDialog(this);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setMessage("请稍候...");
+
         initData();
+        initHandler();
         Utils.checkTakePicturePermission(this);
     }
 
@@ -62,6 +80,7 @@ public class TakePictureActivity extends AppCompatActivity implements View.OnCli
         uploadView.setOnClickListener(this);
         previewView.setOnClickListener(this);
         imgCountView.setText(Data.imgs.size()+"");
+        sensorUtil = new SensorUtil(this);
 
         takePictureView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,8 +89,24 @@ public class TakePictureActivity extends AppCompatActivity implements View.OnCli
                     dialog_upload();
                 } else {
                     Data.imgs.add(textureView.getBitmap());
-                    savePicture(textureView.getBitmap());
                     imgCountView.setText(Data.imgs.size()+"");
+
+                    if (Data.imgs.size() == 1) {
+                        sensorUtil.init();
+                        savePicture(textureView.getBitmap(), 0);
+
+                        getImgSensorInfo(1);
+                    } else if (Data.imgs.size() == 2){
+                        angle1 = sensorUtil.getAngle();
+                        savePicture(textureView.getBitmap(), 1);
+
+                        getImgSensorInfo(2);
+                    } else {
+                        angle2 = sensorUtil.getAngle();
+                        savePicture(textureView.getBitmap(), 2);
+
+                        getImgSensorInfo(3);
+                    }
 
                     if (Data.imgs.size() == 3){
                         dialog_upload();
@@ -87,8 +122,12 @@ public class TakePictureActivity extends AppCompatActivity implements View.OnCli
             case R.id.clear:
                 Data.recycleBitmap(Data.imgs);
                 imgCountView.setText(Data.imgs.size()+"");
+
+                angle1 = angle2 = 0;
+                img_sensor1 = img_sensor2 = img_sensor3 = "";
                 break;
             case R.id.upload:
+                uploadImages();
                 break;
             case R.id.preview:
                 Intent  intent = new Intent(TakePictureActivity.this, editphoto.class);
@@ -97,10 +136,55 @@ public class TakePictureActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
-    private void savePicture(Bitmap bitmap) {
+    private void uploadImages() {
+        if (Data.imgs.size() != 3) {
+            Utils.setToast(this, "请先拍好三张照片");
+            return;
+        }
+
+        dialog.show();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String s = Http.uploadImgs(
+                        new String[]{img_sensor1,img_sensor2, img_sensor3},
+                        new String[]{angle1+"", (angle2-angle1)+""},
+                        img_path
+                );
+                Message msg = Message.obtain();
+                msg.obj = s;
+                msg.what = 0;
+                handler.sendMessage(msg);
+            }
+        }).start();
+    }
+
+    private void getImgSensorInfo(int i) {
+        String tmp = Utils.parseSensorInfo(
+                sensorUtil.getAccData(0),
+                sensorUtil.getMagData(0),
+                sensorUtil.getOriData(0),
+                sensorUtil.getGyrData(0)
+        );
+        switch (i) {
+            case 1:
+                img_sensor1 = tmp;
+                break;
+            case 2:
+                img_sensor2 = tmp;
+                break;
+            case 3:
+                img_sensor3 = tmp;
+                break;
+        }
+    }
+
+    private void savePicture(Bitmap bitmap, int i) {
         String path = Data.getPictureSavePath();
         String name = Data.imgs.size()+".png";
         Utils.saveBitmap(bitmap, path, name);
+
+        img_path[i] = path + File.separator + name;
     }
 
     private void dialog_upload() {
@@ -116,10 +200,34 @@ public class TakePictureActivity extends AppCompatActivity implements View.OnCli
         builder.setPositiveButton("上传", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-
+                uploadView.performClick();
             }
         });
         builder.show();
+    }
+
+    private Handler handler;
+    private void initHandler() {
+        handler = new Handler(){
+            public void handleMessage(Message message) {
+                switch (message.what) {
+                    case 0:     //上传图片
+                        String s = (String) message.obj;
+                        int index = s.indexOf('|');
+                        String pos1 = s.substring(0, index);
+                        String pos2 = s.substring(index+1);
+//                        if (pos.length < 2) return;
+                        Data.x = Double.parseDouble(pos1);
+                        Data.y = Double.parseDouble(pos2);
+                        Utils.setToast(TakePictureActivity.this, "定位成功！");
+                        finish();
+
+                        dialog.dismiss();
+
+                        break;
+                }
+            }
+        };
     }
 
     private void setTextureViewListener() {

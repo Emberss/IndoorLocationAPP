@@ -11,6 +11,9 @@ import java.util.List;
  * Created by ljm on 2017/6/27.
  */
 public class Data {
+    public static double x = 652;
+    public static double y = 682;
+
     public static List<Bitmap> imgs = new ArrayList<>();
     public static String picture_save_path = "/tempImages";
 
