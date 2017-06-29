@@ -36,6 +36,7 @@
         android:textColor="@color/white"
         android:background="@drawable/round_button"/>
     <TextView
+        android:visibility="gone"
         android:id="@+id/index"
         android:layout_width="60dp"
         android:layout_height="60dp"

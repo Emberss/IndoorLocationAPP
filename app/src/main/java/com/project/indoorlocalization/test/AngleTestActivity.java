@@ -30,6 +30,7 @@ import com.project.indoorlocalization.utils.Utils;
 public class AngleTestActivity extends AppCompatActivity implements View.OnClickListener{
     private SensorUtil sensorUtil;
     private Button reset, save, button;
+    private Button zero, display;
     private TextView mAngleView;
     private TextView mImg1View;
     private TextView mImg2View;
@@ -52,13 +53,15 @@ public class AngleTestActivity extends AppCompatActivity implements View.OnClick
         editText = (EditText)findViewById(R.id.ip);
         reset = (Button) findViewById(R.id.reset);
         button = (Button) findViewById(R.id.button);
+        zero = (Button) findViewById(R.id.zero);
+        display = (Button) findViewById(R.id.display);
         save = (Button) findViewById(R.id.save);
         sensorUtil = new SensorUtil(this);
 
         initData();
 
 
-
+        handler.sendEmptyMessageDelayed(0, 500);
     }
 
     @Override
@@ -89,6 +92,21 @@ public class AngleTestActivity extends AppCompatActivity implements View.OnClick
         mImg1View.setOnClickListener(this);
         mImg2View.setOnClickListener(this);
         mImg3View.setOnClickListener(this);
+
+        zero.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sensorUtil.init();
+                mAngleView.setText("");
+            }
+        });
+        display.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                float angle = sensorUtil.getAngle();
+                mAngleView.setText(angle+"");
+            }
+        });
 
         reset.setOnClickListener(new View.OnClickListener() {
             @Override

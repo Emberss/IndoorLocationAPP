@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.project.indoorlocalization.R;
 import com.project.indoorlocalization.http.Http;
+import com.project.indoorlocalization.test.StartActivity;
 import com.project.indoorlocalization.utils.Data;
 import com.project.indoorlocalization.utils.SensorUtil;
 import com.project.indoorlocalization.utils.Utils;
@@ -41,9 +42,9 @@ public class TakePictureActivity extends AppCompatActivity implements View.OnCli
     private TextureView textureView;
 
     private SensorUtil sensorUtil;
-    private float angle1, angle2;
-    private String img_sensor1,img_sensor2,img_sensor3;
-    private String[] img_path = new String[3];
+    private float angle1, angle2;                              //角度信息
+    private String img_sensor1,img_sensor2,img_sensor3;     //每张图片的传感器信息
+    private String[] img_path = new String[3];                //图片存储路径
 
     private ProgressDialog dialog;
 //    private int img_count = 0;
@@ -82,38 +83,7 @@ public class TakePictureActivity extends AppCompatActivity implements View.OnCli
         imgCountView.setText(Data.imgs.size()+"");
         sensorUtil = new SensorUtil(this);
 
-        takePictureView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (Data.imgs.size() == 3) {
-                    dialog_upload();
-                } else {
-                    Data.imgs.add(textureView.getBitmap());
-                    imgCountView.setText(Data.imgs.size()+"");
-
-                    if (Data.imgs.size() == 1) {
-                        sensorUtil.init();
-                        savePicture(textureView.getBitmap(), 0);
-
-                        getImgSensorInfo(1);
-                    } else if (Data.imgs.size() == 2){
-                        angle1 = sensorUtil.getAngle();
-                        savePicture(textureView.getBitmap(), 1);
-
-                        getImgSensorInfo(2);
-                    } else {
-                        angle2 = sensorUtil.getAngle();
-                        savePicture(textureView.getBitmap(), 2);
-
-                        getImgSensorInfo(3);
-                    }
-
-                    if (Data.imgs.size() == 3){
-                        dialog_upload();
-                    }
-                }
-            }
-        });
+        takePictureView.setOnClickListener(this);
     }
 
     @Override
@@ -129,9 +99,16 @@ public class TakePictureActivity extends AppCompatActivity implements View.OnCli
             case R.id.upload:
                 uploadImages();
                 break;
+            case R.id.take_picture:
+                takePicture();
+                break;
             case R.id.preview:
-                Intent  intent = new Intent(TakePictureActivity.this, editphoto.class);
-                startActivity(intent);
+                if (Data.imgs.size() == 0) {
+                    Utils.setToast(TakePictureActivity.this, "请先拍照");
+                } else {
+                    Intent intent = new Intent(TakePictureActivity.this, editphoto.class);
+                    startActivity(intent);
+                }
                 break;
         }
     }
@@ -148,7 +125,7 @@ public class TakePictureActivity extends AppCompatActivity implements View.OnCli
             public void run() {
                 String s = Http.uploadImgs(
                         new String[]{img_sensor1,img_sensor2, img_sensor3},
-                        new String[]{angle1+"", (angle2-angle1)+""},
+                        new String[]{angle1+"", (angle2)+""},
                         img_path
                 );
                 Message msg = Message.obtain();
@@ -157,6 +134,38 @@ public class TakePictureActivity extends AppCompatActivity implements View.OnCli
                 handler.sendMessage(msg);
             }
         }).start();
+    }
+
+    private void takePicture() {
+        if (Data.imgs.size() == 3) {
+            dialog_upload();
+        } else {
+            Data.imgs.add(textureView.getBitmap());
+            imgCountView.setText(Data.imgs.size()+"");
+
+            if (Data.imgs.size() == 1) {
+                sensorUtil.init();
+                savePicture(textureView.getBitmap(), 0);
+
+                getImgSensorInfo(1);
+            } else if (Data.imgs.size() == 2){
+                angle1 = sensorUtil.getAngle();
+                savePicture(textureView.getBitmap(), 1);
+
+                getImgSensorInfo(2);
+
+                sensorUtil.init();
+            } else {
+                angle2 = sensorUtil.getAngle();
+                savePicture(textureView.getBitmap(), 2);
+
+                getImgSensorInfo(3);
+            }
+
+            if (Data.imgs.size() == 3){
+                dialog_upload();
+            }
+        }
     }
 
     private void getImgSensorInfo(int i) {
@@ -214,14 +223,17 @@ public class TakePictureActivity extends AppCompatActivity implements View.OnCli
                     case 0:     //上传图片
                         String s = (String) message.obj;
                         int index = s.indexOf('|');
-                        String pos1 = s.substring(0, index);
-                        String pos2 = s.substring(index+1);
+                        if (index == -1) {
+                            Utils.setToast(TakePictureActivity.this, "定位失败！");
+                        }else {
+                            String pos1 = s.substring(0, index);
+                            String pos2 = s.substring(index + 1);
 //                        if (pos.length < 2) return;
-                        Data.x = Double.parseDouble(pos1);
-                        Data.y = Double.parseDouble(pos2);
-                        Utils.setToast(TakePictureActivity.this, "定位成功！");
-                        finish();
-
+                            Data.x = Double.parseDouble(pos1);
+                            Data.y = Double.parseDouble(pos2);
+                            Utils.setToast(TakePictureActivity.this, "定位成功！");
+                            finish();
+                        }
                         dialog.dismiss();
 
                         break;

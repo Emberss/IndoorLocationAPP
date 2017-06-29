@@ -15,6 +15,7 @@ import com.project.indoorlocalization.R;
 import com.project.indoorlocalization.indoormapview.MapView;
 import com.project.indoorlocalization.indoormapview.Position;
 import com.project.indoorlocalization.indoormapview.OnRealLocationMoveListener;
+import com.project.indoorlocalization.test.StartActivity;
 import com.project.indoorlocalization.utils.Data;
 
 import java.io.IOException;
@@ -43,6 +44,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void initData() {
         takePictureView.setOnClickListener(this);
+        takePictureView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                Intent intent = new Intent(MainActivity.this, StartActivity.class);
+                startActivity(intent);
+                return false;
+            }
+        });
     }
 
     private void initMapView() {
@@ -55,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 //        mMapView.setContext(this);
 
-        mMapView.updateMyLocation(new Position(652, 684));
+        mMapView.updateMyLocation(new Position(652, 1712));
         //mMapView.toggleRealLocationSymbol();
         mMapView.setOnRealLocationMoveListener(new OnRealLocationMoveListener() {
             @Override
@@ -63,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 mInfoTextView.setText(position.toString());
             }
         });
+        mMapView.centerMyLocation();
 //        mMapView.ff();
         //mMapView.scrollBy(0, -100);
         //mMapView.transformToMapCoordinate(new float[]{0, -100});
@@ -84,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onResume();
 
         mMapView.updateMyLocation(new Position(Data.x, Data.y));
+        mMapView.centerMyLocation();
         mInfoTextView.setText(new Position(Data.x, Data.y).toString());
     }
 }

@@ -66,7 +66,7 @@ public class editphoto extends Activity {
         }
             // 将MainListAdapter对象传递给ListView视图
             mListView.setAdapter(adapter);
-            setOnItemLongClickListene();
+            //setOnItemLongClickListene();
             setOnItemClick();
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
