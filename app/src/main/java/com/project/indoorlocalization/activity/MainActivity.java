@@ -19,6 +19,7 @@ import com.project.indoorlocalization.test.StartActivity;
 import com.project.indoorlocalization.utils.Data;
 
 import java.io.IOException;
+import java.util.Random;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
@@ -47,9 +48,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         takePictureView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                Intent intent = new Intent(MainActivity.this, StartActivity.class);
-                startActivity(intent);
-                return false;
+                //Intent intent = new Intent(MainActivity.this, StartActivity.class);
+                //startActivity(intent);
+                Random random = new Random();
+                Data.x = random.nextInt(1200) + 20;
+                Data.y = random.nextInt(1500) + 1300;
+                mMapView.updateMyLocation(new Position(Data.x, Data.y));
+                mMapView.centerMyLocation();
+                mInfoTextView.setText(new Position(Data.x, Data.y).toString());
+
+                return true;
             }
         });
     }
