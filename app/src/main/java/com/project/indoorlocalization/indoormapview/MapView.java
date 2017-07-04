@@ -9,6 +9,7 @@ import android.graphics.BitmapRegionDecoder;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
@@ -16,6 +17,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.SystemClock;
+import android.support.v4.util.Pair;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -30,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class MapView extends View {
@@ -283,6 +286,20 @@ public class MapView extends View {
                 //Utils.setToast(mContext, "aa");
                 float[] xy = {event.getX(), event.getY()};
                 xy = transformToMapCoordinate(xy);
+
+
+                for (int i = 0; i < symbols.size() && showing; ++i) {
+                    LocationSymbol symbol = symbols.get(i);
+                    if (symbol.isPointInClickRect(xy[0], xy[1])
+                            && listener != null) {
+                        listener.onClick((String) dataMap.get(indexs.get(i)).first);
+                    }
+                }
+//                if (MyLocationSymbol1.isPointInClickRect(xy[0], xy[1])) {
+//                    Utils.setToast(mContext, "aa");
+//                }
+
+
                 if (mRealLocationSymbol.isPointInClickRect(xy[0], xy[1])
                         && mRealLocationSymbol.mOnMapSymbolListener != null) {
                     mIsRealLocationMove = true;
@@ -358,6 +375,8 @@ public class MapView extends View {
                         }
                         float scale = (float) (curDis / preDis);
                         Log.v("scale", scale + "#####" + mScale);
+                        if (mScale > 0.85) showing = true;
+                        else showing = false;
                         if ((scale >= 1 && mScale < mMaxScale)
                                 || (scale <= 1 && mScale > mMinScale)) {
                             mMapMatrix.postScale(scale, scale, preMid.x, preMid.y);
@@ -389,6 +408,12 @@ public class MapView extends View {
         return true;
     }
 
+
+    private boolean firstLoading = true;
+    private boolean showing = false;
+    private Map<String, Pair> dataMap;
+    private List<String> indexs = new ArrayList<>();
+    private List<LocationSymbol> symbols = new ArrayList<>();
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -410,10 +435,46 @@ public class MapView extends View {
             if (mMyLocationSymbol != null
                     && mMyLocationSymbol.getLocation() != null) {
                 mMyLocationSymbol.draw(canvas, mMapMatrix, mScale);
-
                 //Utils.setToast(context, mMyLocationSymbol.getLocation().getX()+" "+mMyLocationSymbol.getLocation().getY());
                 //Log.v("#####loc: ", mMyLocationSymbol.getLocation().getX()+" "+mMyLocationSymbol.getLocation().getY());
             }
+
+
+
+            if (firstLoading) {
+                if (showing) {
+                    dataMap = Utils.readShopData(mContext);
+                    for (Map.Entry<String, Pair> entry : dataMap.entrySet()) {
+                        Position pos = (Position) entry.getValue().second;
+
+                        LocationSymbol MyLocationSymbol1 = new LocationSymbol(mMyLocationColor,
+                                mCircleEdgeColor, mMyLocationRadius+10);
+
+//                    MyLocationSymbol1.setRangeCircle(mMyLocationRangeRadius,
+//                            mMyLocationRangeColor);
+                        MyLocationSymbol1.setLocation(pos);
+                        MyLocationSymbol1.draw(canvas, mMapMatrix, mScale);
+
+                        indexs.add(entry.getKey());
+                        symbols.add(MyLocationSymbol1);
+                    }
+                    firstLoading = false;
+                }
+            } else {
+                if (showing) {
+                    int i = 0;
+                    for (Map.Entry<String, Pair> entry : dataMap.entrySet()) {
+                        Position pos = (Position) entry.getValue().second;
+
+                        LocationSymbol MyLocationSymbol1 = symbols.get(i++);
+                        MyLocationSymbol1.draw(canvas, mMapMatrix, mScale);
+                    }
+                }
+            }
+
+//            MyLocationSymbol1.setO
+//            MyLocationSymbol1.mOnMapSymbolListener.onMapSymbolClick();
+
 
             if (mRealLocationSymbol != null && mRealLocationSymbol.getLocation() != null) {
                 mRealLocationSymbol.draw(canvas, mMapMatrix, mScale);
@@ -719,10 +780,11 @@ public class MapView extends View {
 //    private Context context;
 //    public void setContext(Context c) {this.context = c;}
 
-    public void ff(){
-        mMapMatrix.postTranslate(0, -300);
-        calScreenRect();
-
-        invalidate();
+    public interface OnShopSymbolClickListener {
+        void onClick(String s);
+    }
+    private OnShopSymbolClickListener listener;
+    public void setListener(OnShopSymbolClickListener listener){
+        this.listener = listener;
     }
 }

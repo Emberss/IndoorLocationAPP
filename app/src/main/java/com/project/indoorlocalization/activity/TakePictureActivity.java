@@ -12,9 +12,11 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.TextureView;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.project.indoorlocalization.R;
@@ -37,6 +39,7 @@ public class TakePictureActivity extends AppCompatActivity implements View.OnCli
     private TextView imgCountView;
 
     private TextView clearView, uploadView, previewView;
+    private ImageView helpView;
 
     private Camera camera;
     private TextureView textureView;
@@ -64,6 +67,7 @@ public class TakePictureActivity extends AppCompatActivity implements View.OnCli
         uploadView = (TextView)findViewById(R.id.upload);
         previewView = (TextView)findViewById(R.id.preview);
         textureView = (TextureView)findViewById(R.id.textureView);
+        helpView = (ImageView)findViewById(R.id.help);
 
         dialog = new ProgressDialog(this);
         dialog.setCanceledOnTouchOutside(false);
@@ -80,6 +84,7 @@ public class TakePictureActivity extends AppCompatActivity implements View.OnCli
         clearView.setOnClickListener(this);
         uploadView.setOnClickListener(this);
         previewView.setOnClickListener(this);
+        helpView.setOnClickListener(this);
         imgCountView.setText(Data.imgs.size()+"");
         sensorUtil = new SensorUtil(this);
 
@@ -101,6 +106,9 @@ public class TakePictureActivity extends AppCompatActivity implements View.OnCli
                 break;
             case R.id.take_picture:
                 takePicture();
+                break;
+            case R.id.help:
+                showHelp();
                 break;
             case R.id.preview:
                 if (Data.imgs.size() == 0) {
@@ -196,6 +204,20 @@ public class TakePictureActivity extends AppCompatActivity implements View.OnCli
         img_path[i] = path + File.separator + name;
     }
 
+    private void showHelp() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//        builder.setTitle("拍照帮助");
+        View v  = LayoutInflater.from(this).inflate(R.layout.dialog_take_photo_hint, null);
+        builder.setView(v);
+        builder.setNegativeButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+        builder.show();
+    }
+
     private void dialog_upload() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("拍照结束");
@@ -221,21 +243,10 @@ public class TakePictureActivity extends AppCompatActivity implements View.OnCli
             public void handleMessage(Message message) {
                 switch (message.what) {
                     case 0:     //上传图片
-                        String s = (String) message.obj;
-                        int index = s.indexOf('|');
-                        if (index == -1) {
-                            Utils.setToast(TakePictureActivity.this, "定位失败！");
-                        }else {
-                            String pos1 = s.substring(0, index);
-                            String pos2 = s.substring(index + 1);
-//                        if (pos.length < 2) return;
-                            Data.x = Double.parseDouble(pos1);
-                            Data.y = Double.parseDouble(pos2);
-                            Utils.setToast(TakePictureActivity.this, "定位成功！");
-                            finish();
-                        }
                         dialog.dismiss();
 
+                        String s = (String) message.obj;
+                        loc_result(s);
                         break;
                 }
             }
@@ -289,6 +300,42 @@ public class TakePictureActivity extends AppCompatActivity implements View.OnCli
                 });
             }
         });
+    }
+
+    //定位结果
+    private void loc_result(String s) {
+        if (s.equals(getString(R.string.loc_error))) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(getString(R.string.s1));
+            builder.setMessage(getString(R.string.loc_fail));
+            builder.setCancelable(false);
+            builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.dismiss();
+                }
+            });
+            builder.setPositiveButton("重新拍照", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    clearView.performClick();
+                    dialogInterface.dismiss();
+                }
+            });
+            builder.show();
+        }
+        int index = s.indexOf('|');
+        if (index == -1) {
+            Utils.setToast(TakePictureActivity.this, "定位失败！");
+        }else {
+            String pos1 = s.substring(0, index);
+            String pos2 = s.substring(index + 1);
+            double x = Double.parseDouble(pos1);
+            Data.x = Double.parseDouble(pos2);
+            Data.y = Data.mMaxX - x;
+            Utils.setToast(TakePictureActivity.this, "定位成功！");
+            finish();
+        }
     }
 
     private void initCamera() {

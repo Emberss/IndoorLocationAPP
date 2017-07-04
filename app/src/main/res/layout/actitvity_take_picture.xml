@@ -107,4 +107,11 @@
             android:background="@drawable/settting"/>
     </LinearLayout>
 
+    <ImageView
+        android:id="@+id/help"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@mipmap/help"
+        android:layout_gravity="end"
+        android:layout_margin="10dp"/>
 </FrameLayout>

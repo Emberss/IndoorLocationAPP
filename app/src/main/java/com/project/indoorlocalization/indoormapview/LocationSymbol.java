@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
+import android.graphics.Rect;
 
 public class LocationSymbol extends BaseMapSymbol {
 
@@ -13,6 +14,10 @@ public class LocationSymbol extends BaseMapSymbol {
     private Paint mCircleEdgePaint = null;
     private float mRangeRadius = 0;
     private int mRangeCircleColor = 0x00ffffff;
+
+
+    private Rect mClickRect = new Rect(0, 0, 0, 0);
+
 
     public LocationSymbol(int mMainColor, int mEdgeColor, float mRadius) {
         this.mThreshold = 0f;
@@ -28,6 +33,7 @@ public class LocationSymbol extends BaseMapSymbol {
         mCircleEdgePaint.setStyle(Style.STROKE);
         mCircleEdgePaint.setColor(mEdgeColor);
         mCirclePaint.setAntiAlias(true);
+
     }
 
     public void setRangeCircle(float rangeCircleRadius, int rangeCircleColor) {
@@ -58,10 +64,17 @@ public class LocationSymbol extends BaseMapSymbol {
         // paint circle
         canvas.drawCircle(locationValue[0], locationValue[1], mRadius + 1,
                 mCircleEdgePaint);
+
+
+        int left = (int)(mLocation.getX() - mRadius);
+        int right = (int)(left + 2 * mRadius);
+        int top = (int)(mLocation.getY() - mRadius);
+        int bottom = (int)(top + 2 * mRadius);
+        mClickRect.set(left, top, right, bottom);
     }
 
     @Override
     public boolean isPointInClickRect(float x, float y) {
-        return false;
+        return mClickRect != null && x >= mClickRect.left && x <= mClickRect.right && y >= mClickRect.top && y <= mClickRect.bottom;
     }
 }

@@ -17,6 +17,7 @@ import com.project.indoorlocalization.indoormapview.Position;
 import com.project.indoorlocalization.indoormapview.OnRealLocationMoveListener;
 import com.project.indoorlocalization.test.StartActivity;
 import com.project.indoorlocalization.utils.Data;
+import com.project.indoorlocalization.utils.Utils;
 
 import java.io.IOException;
 import java.util.Random;
@@ -41,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initData();
         initMapView();
 
+        //Utils.setToast(this, Utils.readShopData(this));
     }
 
     private void initData() {
@@ -50,12 +52,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public boolean onLongClick(View view) {
                 //Intent intent = new Intent(MainActivity.this, StartActivity.class);
                 //startActivity(intent);
-                Random random = new Random();
-                Data.x = random.nextInt(1200) + 20;
-                Data.y = random.nextInt(1500) + 1300;
-                mMapView.updateMyLocation(new Position(Data.x, Data.y));
-                mMapView.centerMyLocation();
-                mInfoTextView.setText(new Position(Data.x, Data.y).toString());
+//                Random random = new Random();
+//                Data.x = random.nextInt(1200) + 20;
+//                Data.y = random.nextInt(1500) + 1300;
+
+                try {
+                    mMapView.initNewMap(getAssets().open("gogo.png"), 0.8, 0, new Position(Data.x, Data.y));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                updateLocation();
 
                 return true;
             }
@@ -64,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void initMapView() {
         try {
-            mMapView.initNewMap(getAssets().open("gogo.png"), 0.8, 0, new Position(652, 684));
+            mMapView.initNewMap(getAssets().open("gogo.png"), 0.8, 0, new Position(Data.x, Data.y));
             //mMapView.initNewMap(getResources().openRawResource(R.raw.gogo), 1, 0, new Position(652, 684));
         } catch (IOException e) {
             e.printStackTrace();
@@ -81,6 +87,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
         mMapView.centerMyLocation();
+
+        mMapView.setListener(new MapView.OnShopSymbolClickListener() {
+            @Override
+            public void onClick(String s) {
+                Utils.setToast(MainActivity.this, s);
+            }
+        });
 //        mMapView.ff();
         //mMapView.scrollBy(0, -100);
         //mMapView.transformToMapCoordinate(new float[]{0, -100});
@@ -97,12 +110,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    private void updateLocation() {
+        mInfoTextView.setText(new Position(Data.x, Data.y).toString());
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    Thread.sleep(300);
+                    mMapView.updateMyLocation(new Position(Data.x, Data.y));
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
     @Override
     public void onResume() {
         super.onResume();
 
-        mMapView.updateMyLocation(new Position(Data.x, Data.y));
-        mMapView.centerMyLocation();
-        mInfoTextView.setText(new Position(Data.x, Data.y).toString());
+//        Random random = new Random();
+//        Data.x = random.nextInt(1200) + 20;
+//        Data.y = random.nextInt(1500) + 1300;
+        //mMapView.centerMyLocation();
+        updateLocation();
     }
 }

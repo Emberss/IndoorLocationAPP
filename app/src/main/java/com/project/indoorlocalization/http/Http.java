@@ -32,8 +32,8 @@ import java.util.List;
  * Created by ljm on 2017/4/13.
  */
 public class Http {
-    private static String ip0 = "192.168.191.1";
-    public static String ip = "192.168.191.1";
+    private static String ip0 = "222.200.185.76";
+    public static String ip = "222.200.185.76";
     public static String base = "http://"+ip+":8080/IndoorLocServer";
     //"http://120.25.91.6:8080/IndoorLocServer"
     private static final String url1 = "/uploadSensorMsg";

@@ -5,4 +5,8 @@
     <string name="bit_rate">比特率:</string>
     <string name="bit_rate_unit">Mbit/s</string>
     <string name="error">参数错误！</string>
+    <string name="s1">定位失败</string>
+    <string name="loc_fail">定位失败！当前您所拍的店铺暂时无法识别，请换一家店铺并重新拍照</string>
+    <string name="loc_error">match failure.</string>
+    <!--<string name="take_photo_hint"></string>-->
 </resources>

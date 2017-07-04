@@ -7,16 +7,24 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.util.Pair;
+import android.util.Log;
 import android.widget.Toast;
+
+import com.project.indoorlocalization.indoormapview.Position;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by ljm on 2017/5/9.
@@ -32,6 +40,49 @@ public class Utils {
             toast.setText(msg);
             toast.show();
         }
+    }
+
+    public static Map<String, Pair> readShopData(Context context) {
+
+        String tmp = readTxtFile(context, "map.txt");
+        //Log.v("#####", tmp);
+        String[] data = tmp.split("#");
+        Map<String, Pair> dataMap = new HashMap<>();
+        for (int i = 1; i < data.length; ++i) {
+            //Log.v("#####1", data[i]+"");
+            String[] s = data[i].split(",");//Log.v("#####1", data[i]+"");
+            dataMap.put(s[1], new Pair(s[2], null));
+        }
+
+        tmp = readTxtFile(context, "location.txt");
+        //Log.v("#####", tmp);
+        data = tmp.split("#");
+        for (int i = 1; i < data.length; ++i) {
+            String[] s = data[i].split(",");
+            if (dataMap.get(s[0]) == null) continue;
+            //String first = (String) dataMap.get(s[0]);
+            double x = Double.parseDouble(s[1].substring(1));
+            double y = Double.parseDouble(s[2].substring(0, s[2].length()-1));
+            //Log.v("#####2", s[0]+"");
+            dataMap.put(s[0], new Pair(dataMap.get(s[0]).first, new Position(y, Data.mMaxX - x)));
+        }
+
+        return dataMap;
+    }
+    private static String readTxtFile(Context context, String name) {
+        BufferedReader bufferedReader = null;
+        StringBuffer stringBuffer = new StringBuffer();
+        try {
+            // context.getAssets().open("map.txt");
+            bufferedReader = new BufferedReader(new InputStreamReader(context.getAssets().open(name)));
+            String line = null;
+            while ((line = bufferedReader.readLine()) != null) {
+                stringBuffer.append(line+"#");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return stringBuffer.toString();
     }
 
     //保存图片

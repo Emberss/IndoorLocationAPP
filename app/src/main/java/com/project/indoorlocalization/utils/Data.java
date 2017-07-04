@@ -14,6 +14,9 @@ public class Data {
     public static double x = 652;
     public static double y = 1712;
 
+    public static double mMaxX = 2960;
+
+
     public static List<Bitmap> imgs = new ArrayList<>();
     public static String picture_save_path = "/tempImages";
 
