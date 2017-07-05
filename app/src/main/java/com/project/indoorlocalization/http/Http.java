@@ -34,7 +34,7 @@ import java.util.List;
 public class Http {
     private static String ip0 = "222.200.185.76";
     public static String ip = "222.200.185.76";
-    public static String base = "http://"+ip+":8080/IndoorLocServer";
+    public static String base = "http://"+ip+":9302/IndoorLocServer";
     //"http://120.25.91.6:8080/IndoorLocServer"
     private static final String url1 = "/uploadSensorMsg";
     private static final String url2 = "/uploadimage";

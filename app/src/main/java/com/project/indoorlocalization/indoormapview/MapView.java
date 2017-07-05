@@ -375,7 +375,7 @@ public class MapView extends View {
                         }
                         float scale = (float) (curDis / preDis);
                         Log.v("scale", scale + "#####" + mScale);
-                        if (mScale > 0.85) showing = true;
+                        if (mScale > 0.7) showing = true;
                         else showing = false;
                         if ((scale >= 1 && mScale < mMaxScale)
                                 || (scale <= 1 && mScale > mMinScale)) {

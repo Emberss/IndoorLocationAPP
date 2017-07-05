@@ -115,7 +115,7 @@ public class TakePictureActivity extends AppCompatActivity implements View.OnCli
                     Utils.setToast(TakePictureActivity.this, "请先拍照");
                 } else {
                     Intent intent = new Intent(TakePictureActivity.this, editphoto.class);
-                    startActivity(intent);
+                    startActivityForResult(intent, 0);
                 }
                 break;
         }
@@ -334,6 +334,7 @@ public class TakePictureActivity extends AppCompatActivity implements View.OnCli
             Data.x = Double.parseDouble(pos2);
             Data.y = Data.mMaxX - x;
             Utils.setToast(TakePictureActivity.this, "定位成功！");
+            clearView.performClick();
             finish();
         }
     }
@@ -356,6 +357,14 @@ public class TakePictureActivity extends AppCompatActivity implements View.OnCli
     @Override
     public void onResume() {
         super.onResume();
-        imgCountView.setText(Data.imgs.size()+"");
+        if (imgCountView != null) imgCountView.setText(Data.imgs.size()+"");
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (clearView != null) clearView.performClick();
+    }
+
+
 }
