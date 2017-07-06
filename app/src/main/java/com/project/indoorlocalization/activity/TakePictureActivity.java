@@ -46,8 +46,8 @@ public class TakePictureActivity extends AppCompatActivity implements View.OnCli
 
     private SensorUtil sensorUtil;
     private float angle1, angle2;                              //角度信息
-    private String img_sensor1,img_sensor2,img_sensor3;     //每张图片的传感器信息
-    private String[] img_path = new String[3];                //图片存储路径
+    //private String img_sensor1,img_sensor2,img_sensor3;     //每张图片的传感器信息
+    //private String[] img_path = new String[3];                //图片存储路径
 
     private ProgressDialog dialog;
 //    private int img_count = 0;
@@ -99,7 +99,7 @@ public class TakePictureActivity extends AppCompatActivity implements View.OnCli
                 imgCountView.setText(Data.imgs.size()+"");
 
                 angle1 = angle2 = 0;
-                img_sensor1 = img_sensor2 = img_sensor3 = "";
+                Data.img_sensor1 = Data.img_sensor2 = Data.img_sensor3 = "";
                 break;
             case R.id.upload:
                 uploadImages();
@@ -132,9 +132,9 @@ public class TakePictureActivity extends AppCompatActivity implements View.OnCli
             @Override
             public void run() {
                 String s = Http.uploadImgs(
-                        new String[]{img_sensor1,img_sensor2, img_sensor3},
+                        new String[]{Data.img_sensor1,Data.img_sensor2, Data.img_sensor3},
                         new String[]{angle1+"", (angle2)+""},
-                        img_path
+                        Data.img_path
                 );
                 Message msg = Message.obtain();
                 msg.obj = s;
@@ -185,13 +185,13 @@ public class TakePictureActivity extends AppCompatActivity implements View.OnCli
         );
         switch (i) {
             case 1:
-                img_sensor1 = tmp;
+                Data.img_sensor1 = tmp;
                 break;
             case 2:
-                img_sensor2 = tmp;
+                Data.img_sensor2 = tmp;
                 break;
             case 3:
-                img_sensor3 = tmp;
+                Data.img_sensor3 = tmp;
                 break;
         }
     }
@@ -201,7 +201,7 @@ public class TakePictureActivity extends AppCompatActivity implements View.OnCli
         String name = Data.imgs.size()+".png";
         Utils.saveBitmap(bitmap, path, name);
 
-        img_path[i] = path + File.separator + name;
+        Data.img_path[i] = path + File.separator + name;
     }
 
     private void showHelp() {
@@ -360,11 +360,11 @@ public class TakePictureActivity extends AppCompatActivity implements View.OnCli
         if (imgCountView != null) imgCountView.setText(Data.imgs.size()+"");
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (clearView != null) clearView.performClick();
-    }
+//    @Override
+//    public void onDestroy() {
+//        super.onDestroy();
+//        if (clearView != null) clearView.performClick();
+//    }
 
 
 }

@@ -9,20 +9,26 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import java.util.ArrayList;
+import java.util.List;
+
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import com.project.indoorlocalization.R;
 import com.project.indoorlocalization.utils.Data;
+import com.project.indoorlocalization.utils.Utils;
 
 /**
  * Created by Embers on 2017/6/26.
@@ -46,6 +52,10 @@ public class editphoto extends Activity {
 
         // 指定Activity的布局使用activity_main.xml
         setContentView(R.layout.edit_photo);
+
+        modify = (Button)findViewById(R.id.modify);
+        width = (EditText)findViewById(R.id.width);
+        height = (EditText)findViewById(R.id.height);
 
         ImageView imageView = (ImageView) findViewById(R.id.back);
         imageView.setAlpha(70);
@@ -75,7 +85,7 @@ public class editphoto extends Activity {
             }
         });
 
-
+        resizeBitmap();
     }
 
     public void setOnItemLongClickListene() {
@@ -125,6 +135,37 @@ public class editphoto extends Activity {
             }
         });
     }
+
+
+    private Button modify;
+    private EditText width, height;
+    private void resizeBitmap() {
+        modify.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (width.getText().length() == 0 || height.getText().length() == 0) {
+                    Utils.setToast(editphoto.this, "null");
+                } else {
+                    int w = Integer.parseInt(width.getText().toString());
+                    int h = Integer.parseInt(height.getText().toString());
+                    List<Bitmap> tmp = new ArrayList<Bitmap>();
+                    for (int i = 0; i < Data.imgs.size(); ++i) {
+                        tmp.add(Utils.resizeBitmap(Data.imgs.get(i), w, h));
+                    }
+                    Data.imgs = tmp;
+                    for (int i = 0; i < Data.imgs.size(); ++i) {
+                        String path = Data.getPictureSavePath();
+                        String name = (i+1)+".png";
+                        Utils.saveBitmap(Data.imgs.get(i), path, name);
+                    }
+                    Utils.setToast(editphoto.this, "修改成功!");
+                }
+            }
+        });
+    }
+
+
+
 
     /**
      * 定义ListView适配器MainListViewAdapter

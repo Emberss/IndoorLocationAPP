@@ -1,6 +1,7 @@
 package com.project.indoorlocalization.activity;
 
 import android.app.Instrumentation;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -15,6 +16,7 @@ import com.project.indoorlocalization.R;
 import com.project.indoorlocalization.indoormapview.MapView;
 import com.project.indoorlocalization.indoormapview.Position;
 import com.project.indoorlocalization.indoormapview.OnRealLocationMoveListener;
+import com.project.indoorlocalization.test.AngleTestActivity;
 import com.project.indoorlocalization.test.StartActivity;
 import com.project.indoorlocalization.utils.Data;
 import com.project.indoorlocalization.utils.Utils;
@@ -29,6 +31,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView mInfoTextView;
 
     private ImageView takePictureView;
+
+    private ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +50,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initData() {
+        dialog  = new ProgressDialog(this);
+
         takePictureView.setOnClickListener(this);
         takePictureView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -56,12 +62,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                Data.x = random.nextInt(1200) + 20;
 //                Data.y = random.nextInt(1500) + 1300;
 
-                try {
-                    mMapView.initNewMap(getAssets().open("gogo.png"), 0.8, 0, new Position(Data.x, Data.y));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                updateLocation();
+//                try {
+//                    mMapView.initNewMap(getAssets().open("gogo.png"), 0.8, 0, new Position(Data.x, Data.y));
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//                updateLocation();
+
+                Intent intent = new Intent(MainActivity.this, AngleTestActivity.class);
+                startActivity(intent);
 
                 return true;
             }
@@ -104,6 +113,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.take_picture:
+                dialog.show();
+
                 Intent intent = new Intent(MainActivity.this, TakePictureActivity.class);
                 startActivity(intent);
                 break;
@@ -129,6 +140,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onResume() {
         super.onResume();
 
+        if (dialog != null && dialog.isShowing()) dialog.dismiss();
 //        Random random = new Random();
 //        Data.x = random.nextInt(1200) + 20;
 //        Data.y = random.nextInt(1500) + 1300;

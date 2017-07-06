@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -11,6 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -20,6 +22,7 @@ import android.widget.TextView;
 
 import com.project.indoorlocalization.R;
 import com.project.indoorlocalization.http.Http;
+import com.project.indoorlocalization.utils.Data;
 import com.project.indoorlocalization.utils.SensorUtil;
 import com.project.indoorlocalization.utils.UriPath;
 import com.project.indoorlocalization.utils.Utils;
@@ -134,22 +137,23 @@ public class AngleTestActivity extends AppCompatActivity implements View.OnClick
             public void onClick(View v) {
                 //float angle = sensorUtil.getAngle();
                 //mAngleView.setText(angle+"");
-                dialog.show();
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        String[] sensorInfos = new String[4];
-                        sensorInfos[0] = sensorUtil.getAccData();
-                        sensorInfos[1] = sensorUtil.getGyrData();
-                        sensorInfos[2] = sensorUtil.getMagData();
-                        sensorInfos[3] = sensorUtil.getOriData();
-                        String s = Http.uploadImgs(sensorInfos,new String[]{"0","0"}, new String[]{path1, path2, path3});
-                        Message message = Message.obtain();
-                        message.obj = s;
-                        message.what = 1;
-                        handler.sendMessage(message);
-                    }
-                }).start();
+//                dialog.show();
+//                new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        String[] sensorInfos = new String[4];
+//                        sensorInfos[0] = sensorUtil.getAccData();
+//                        sensorInfos[1] = sensorUtil.getGyrData();
+//                        sensorInfos[2] = sensorUtil.getMagData();
+//                        sensorInfos[3] = sensorUtil.getOriData();
+//                        String s = Http.uploadImgs(sensorInfos,new String[]{"0","0"}, new String[]{path1, path2, path3});
+//                        Message message = Message.obtain();
+//                        message.obj = s;
+//                        message.what = 1;
+//                        handler.sendMessage(message);
+//                    }
+//                }).start();
+                uploadImages();
             }
         });
     }
@@ -165,9 +169,37 @@ public class AngleTestActivity extends AppCompatActivity implements View.OnClick
 
                 String s = (String) msg.obj;
                 Utils.setToast(AngleTestActivity.this, s);
+            } else if (msg.what == 111) {
+                dialog.dismiss();
+                String s = (String) msg.obj;
+                loc_result(s);
             }
         }
     };
+
+    private void uploadImages() {
+//        if (Data.imgs.size() != 3) {
+//            Utils.setToast(this, "请先拍好三张照片");
+//            return;
+//        }
+
+        dialog.show();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String s = Http.uploadImgs(
+                        new String[]{"","", ""},
+                        new String[]{30+"", (30)+""},
+                        new String[]{path1,path2,path3}
+                );
+                Message msg = Message.obtain();
+                msg.obj = s;
+                msg.what = 111;
+                handler.sendMessage(msg);
+            }
+        }).start();
+    }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -193,6 +225,44 @@ public class AngleTestActivity extends AppCompatActivity implements View.OnClick
                     break;
             }
             //cursor.close();
+        }
+    }
+
+
+
+    private void loc_result(String s) {
+        if (s.equals(getString(R.string.loc_error))) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(getString(R.string.s1));
+            builder.setMessage(getString(R.string.loc_fail));
+            builder.setCancelable(false);
+            builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.dismiss();
+                }
+            });
+            builder.setPositiveButton("重新拍照", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    //clearView.performClick();
+                    dialogInterface.dismiss();
+                }
+            });
+            builder.show();
+        }
+        int index = s.indexOf('|');
+        if (index == -1) {
+            Utils.setToast(AngleTestActivity.this, "定位失败！");
+        }else {
+            String pos1 = s.substring(0, index);
+            String pos2 = s.substring(index + 1);
+            double x = Double.parseDouble(pos1);
+            Data.x = Double.parseDouble(pos2);
+            Data.y = Data.mMaxX - x;
+            Utils.setToast(AngleTestActivity.this, "定位成功！");
+            //clearView.performClick();
+            finish();
         }
     }
 }

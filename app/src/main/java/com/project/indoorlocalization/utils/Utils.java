@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.util.Pair;
@@ -40,6 +41,18 @@ public class Utils {
             toast.setText(msg);
             toast.show();
         }
+    }
+
+    public static Bitmap resizeBitmap(Bitmap bitmap, int w, int h) {
+        if (bitmap == null) {
+            Log.v("####:", null);
+            return null;
+        }
+
+        Matrix matrix = new Matrix();
+        matrix.postScale((float) (w)/bitmap.getWidth(), (float) (h)/bitmap.getHeight());
+        Bitmap tmp = Bitmap.createBitmap(bitmap, 0,0,bitmap.getWidth(),bitmap.getHeight(),matrix,true);
+        return tmp;
     }
 
     public static Map<String, Pair> readShopData(Context context) {
