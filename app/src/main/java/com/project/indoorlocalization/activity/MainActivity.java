@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private MapView mMapView;
     private TextView mInfoTextView;
+    private TextView mLabel1View,mLabel2View,mLabel3View;
 
     private ImageView takePictureView;
 
@@ -41,6 +42,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mMapView = (MapView) findViewById(R.id.mapview);
         mInfoTextView = (TextView) findViewById(R.id.tv_current_location);
+        mLabel1View = (TextView) findViewById(R.id.label1);
+        mLabel2View = (TextView) findViewById(R.id.label2);
+        mLabel3View = (TextView) findViewById(R.id.label3);
         takePictureView = (ImageView)findViewById(R.id.take_picture);
 
         initData();
@@ -136,6 +140,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }).start();
     }
 
+    private void displayLabel() {
+        if (Data.labelShowing) {
+            mLabel1View.setText(Data.label1+":"+Data.shopNames.get(Data.label1));
+            mLabel2View.setText(Data.label2+":"+Data.shopNames.get(Data.label2));
+            mLabel3View.setText(Data.label3+":"+Data.shopNames.get(Data.label3));
+        } else {
+            mLabel1View.setText("");
+            mLabel2View.setText("");
+            mLabel3View.setText("");
+        }
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -146,5 +162,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        Data.y = random.nextInt(1500) + 1300;
         //mMapView.centerMyLocation();
         updateLocation();
+        displayLabel();
     }
 }

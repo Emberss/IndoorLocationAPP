@@ -34,7 +34,8 @@
             android:screenOrientation="landscape"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
         <activity android:name=".test.IndoorLocalization"/>
-        <activity android:name=".test.AngleTestActivity"/>
+        <activity android:name=".test.AngleTestActivity"
+            android:windowSoftInputMode="stateVisible|adjustResize"/>
         <activity android:name=".activity.editphoto"/>
     </application>
 

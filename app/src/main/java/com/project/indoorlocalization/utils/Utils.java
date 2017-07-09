@@ -5,11 +5,14 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.util.Pair;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.project.indoorlocalization.indoormapview.Position;
@@ -43,16 +46,36 @@ public class Utils {
         }
     }
 
-    public static Bitmap resizeBitmap(Bitmap bitmap, int w, int h) {
-        if (bitmap == null) {
-            Log.v("####:", null);
-            return null;
-        }
+    public static Bitmap getBitmap(String path) {
+//        File file = new File(path);
+//        Bitmap bitmap = null;
+//        try {
+//            bitmap = BitmapFactory.decodeFile(path);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+        return BitmapFactory.decodeFile(path);
+    }
 
+    public static Bitmap resizeBitmap(Bitmap bitmap, int w, int h) {
         Matrix matrix = new Matrix();
         matrix.postScale((float) (w)/bitmap.getWidth(), (float) (h)/bitmap.getHeight());
         Bitmap tmp = Bitmap.createBitmap(bitmap, 0,0,bitmap.getWidth(),bitmap.getHeight(),matrix,true);
         return tmp;
+    }
+    public static Bitmap resizeBitmap(Bitmap bitmap, float scale) {
+        Matrix matrix = new Matrix();
+        matrix.postScale(scale, scale);
+        Bitmap tmp = Bitmap.createBitmap(bitmap, 0,0,bitmap.getWidth(),bitmap.getHeight(),matrix,true);
+        float newWidth = tmp.getWidth();
+        float newHeight = tmp.getHeight();
+        int x = (int)(newWidth/2 - bitmap.getWidth()/2);
+        int y = (int)(newHeight/2 - bitmap.getHeight()/2);
+
+        Log.v("###x:", x+"");
+        Log.v("###y:", y+"");
+        return Bitmap.createBitmap(tmp, (int)(x), (int)(y), x+1920, y+1080, null, false);
+
     }
 
     public static Map<String, Pair> readShopData(Context context) {
@@ -63,8 +86,9 @@ public class Utils {
         Map<String, Pair> dataMap = new HashMap<>();
         for (int i = 1; i < data.length; ++i) {
             //Log.v("#####1", data[i]+"");
-            String[] s = data[i].split(",");//Log.v("#####1", data[i]+"");
+            String[] s = data[i].split(",");
             dataMap.put(s[1], new Pair(s[2], null));
+            Data.shopNames.put(s[0], s[2]);
         }
 
         tmp = readTxtFile(context, "location.txt");

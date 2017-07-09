@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,6 +15,7 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -33,7 +35,7 @@ import com.project.indoorlocalization.utils.Utils;
 public class AngleTestActivity extends AppCompatActivity implements View.OnClickListener{
     private SensorUtil sensorUtil;
     private Button reset, save, button;
-    private Button zero, display;
+    private Button zero, display, dataView;
     private TextView mAngleView;
     private TextView mImg1View;
     private TextView mImg2View;
@@ -54,6 +56,7 @@ public class AngleTestActivity extends AppCompatActivity implements View.OnClick
         mImg2View = (TextView)findViewById(R.id.img2);
         mImg3View = (TextView)findViewById(R.id.img3);
         editText = (EditText)findViewById(R.id.ip);
+        dataView = (Button) findViewById(R.id.data);
         reset = (Button) findViewById(R.id.reset);
         button = (Button) findViewById(R.id.button);
         zero = (Button) findViewById(R.id.zero);
@@ -79,6 +82,10 @@ public class AngleTestActivity extends AppCompatActivity implements View.OnClick
             case R.id.img3:
                 uploadImg(3);
                 break;
+            case R.id.data:
+                Intent intent = new Intent(AngleTestActivity.this, MediaRecorderActivity.class);
+                startActivity(intent);
+                break;
         }
     }
 
@@ -95,6 +102,7 @@ public class AngleTestActivity extends AppCompatActivity implements View.OnClick
         mImg1View.setOnClickListener(this);
         mImg2View.setOnClickListener(this);
         mImg3View.setOnClickListener(this);
+        dataView.setOnClickListener(this);
 
         zero.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -178,12 +186,8 @@ public class AngleTestActivity extends AppCompatActivity implements View.OnClick
     };
 
     private void uploadImages() {
-//        if (Data.imgs.size() != 3) {
-//            Utils.setToast(this, "请先拍好三张照片");
-//            return;
-//        }
-
         dialog.show();
+        handler.removeCallbacksAndMessages(null);
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -203,34 +207,39 @@ public class AngleTestActivity extends AppCompatActivity implements View.OnClick
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        String path = Data.getPictureSavePath();
         if (resultCode == Activity.RESULT_OK ) {
             Uri uri = data.getData();
             String p = UriPath.getImageAbsolutePath(this, uri);
-//            ContentResolver contentResolver = this.getContentResolver();
-//            Cursor cursor = contentResolver.query(uri, null, null, null, null);
-//            if (cursor == null) return;
-//            cursor.moveToFirst();
+            String name = requestCode+".png";
             switch (requestCode) {
                 case 1:
-                    path1 = p;//cursor.getString(cursor.getColumnIndex("_data"));
+                    Bitmap bitmap = Utils.resizeBitmap(Utils.getBitmap(p), 228, 128);
+                    Utils.saveBitmap(bitmap, path, name);
+                    path1 = path +"/"+ name;
                     mImg1View.setText(path1);
                     break;
                 case 2:
-                    path2 = p;//cursor.getString(cursor.getColumnIndex("_data"));
+                    bitmap = Utils.resizeBitmap(Utils.getBitmap(p), 228, 128);
+                    Utils.saveBitmap(bitmap, path, name);
+                    path2 = path +"/"+ name;
                     mImg2View.setText(path2);
                     break;
                 case 3:
-                    path3 = p;//cursor.getString(cursor.getColumnIndex("_data"));
+                    bitmap = Utils.resizeBitmap(Utils.getBitmap(p), 228, 128);
+                    Utils.saveBitmap(bitmap, path, name);
+                    path3 = path +"/"+ name;
                     mImg3View.setText(path3);
                     break;
             }
-            //cursor.close();
         }
     }
 
 
 
     private void loc_result(String s) {
+        dialog.dismiss();
+
         if (s.equals(getString(R.string.loc_error))) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(getString(R.string.s1));
@@ -242,26 +251,29 @@ public class AngleTestActivity extends AppCompatActivity implements View.OnClick
                     dialogInterface.dismiss();
                 }
             });
-            builder.setPositiveButton("重新拍照", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    //clearView.performClick();
-                    dialogInterface.dismiss();
-                }
-            });
             builder.show();
         }
-        int index = s.indexOf('|');
-        if (index == -1) {
-            Utils.setToast(AngleTestActivity.this, "定位失败！");
+
+        String[] data = s.split("#");
+        if (data == null || data.length < 5) {
+            Utils.setToast(AngleTestActivity.this, "定位失败！\n"+s);
+            Data.labelShowing = false;
         }else {
-            String pos1 = s.substring(0, index);
-            String pos2 = s.substring(index + 1);
-            double x = Double.parseDouble(pos1);
-            Data.x = Double.parseDouble(pos2);
+
+            Data.label1 = data[2];
+            Data.label2 = data[3];
+            Data.label3 = data[4];
+            double x = 0;
+            try {
+                x = Double.parseDouble(data[0]);
+                Data.x = Double.parseDouble(data[1]);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+
             Data.y = Data.mMaxX - x;
             Utils.setToast(AngleTestActivity.this, "定位成功！");
-            //clearView.performClick();
+            Data.labelShowing = true;
             finish();
         }
     }

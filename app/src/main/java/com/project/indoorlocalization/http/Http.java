@@ -32,21 +32,21 @@ import java.util.List;
  * Created by ljm on 2017/4/13.
  */
 public class Http {
-    private static String ip0 = "222.200.185.76";
-    public static String ip = "222.200.185.76";
-    public static String base = "http://"+ip+":9302/IndoorLocServer";
+    private static String ip0 = "222.200.185.76:9302";
+    public static String ip = "222.200.185.76:9302";
+    public static String base = "http://"+ip+"/IndoorLocServer";
     //"http://120.25.91.6:8080/IndoorLocServer"
     private static final String url1 = "/uploadSensorMsg";
     private static final String url2 = "/uploadimage";
 
     public static void updateIP(String s) {
         ip = s;
-        base = "http://"+ip+":8080/IndoorLocServer";
+        base = "http://"+ip+"/IndoorLocServer";
     }
 
     public static void reset() {
         ip = ip0;
-        base = "http://"+ip+":8080/IndoorLocServer";
+        base = "http://"+ip+"/IndoorLocServer";
     }
 
     public static String uploadImgs(String[] sensorInfos, String[] angles, String [] paths) {
@@ -70,8 +70,8 @@ public class Http {
             img_paths.add(paths[i]);
         }
         //Utils.setToast(context.getApplicationContext(), img_keys.size()+"  "+ img_paths.size());
-        Log.v("###### key:", img_keys.size()+"");
-        Log.v("###### path:", img_paths.size()+"");
+        //Log.v("###### key:", img_keys.size()+"");
+        //Log.v("###### path:", img_paths.size()+"");
         //return "";
         return postHelper(base + url2, keys, values, img_keys, img_paths);
     }
@@ -151,8 +151,8 @@ public class Http {
             ContentBody contentBody = new FileBody(file);
             multipartEntity.addPart(img_keys.get(i), contentBody);
         }
-        Log.v("###### key1:", img_keys.size()+"");
-        Log.v("###### path1:", img_paths.size()+"");
+        //Log.v("###### key1:", img_keys.size()+"");
+        //Log.v("###### path1:", img_paths.size()+"");
         httpPost.setEntity(multipartEntity);
         for (int i = 0; i < keys.size(); ++i) {
             try {
@@ -172,6 +172,6 @@ public class Http {
         } catch (IOException e2) {
             e2.printStackTrace();
         }
-        return "";
+        return "服务端连不上";
     }
 }

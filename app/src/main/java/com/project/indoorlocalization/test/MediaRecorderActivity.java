@@ -55,7 +55,7 @@ public class MediaRecorderActivity extends AppCompatActivity{
     private MediaRecorder mediaRecorder;
     private File outputFile;
 
-    private SensorUtil sensorUtil;
+    //private SensorUtil sensorUtil;
     private ProgressDialog dialog;
     private int mCurrFrameNum = 0;
     private float[] frame0_gyrData;
@@ -121,7 +121,7 @@ public class MediaRecorderActivity extends AppCompatActivity{
         s = getString(R.string.bit_rate) + mBitRate + getString(R.string.bit_rate_unit);
         mBitRateView.setText(s);
 
-        sensorUtil = new SensorUtil(this);
+//        sensorUtil = new SensorUtil(this);
         dialog = new ProgressDialog(this);
         angle_diff_list = new ArrayList<>();
         frame_num_list = new ArrayList<>();
@@ -190,7 +190,9 @@ public class MediaRecorderActivity extends AppCompatActivity{
             }
             @Override
             public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-                return false;
+                mCamera.stopPreview();
+                mCamera.release();
+                return true;
             }
             @Override
             public void onSurfaceTextureUpdated(SurfaceTexture surface) {
@@ -221,13 +223,13 @@ public class MediaRecorderActivity extends AppCompatActivity{
                     //frame0_gyrData = data;
                     angle_diff_list.add(0f);
                 } else {
-                    angle_diff_list.add(sensorUtil.getAngle());
+                    //angle_diff_list.add(sensorUtil.getAngle());
                 }
                 frame_num_list.add(mCurrFrameNum);
-                ori_data_list.add(sensorUtil.getOriData(0));
-                acc_data_list.add(sensorUtil.getAccData(0));
-                mag_data_list.add(sensorUtil.getMagData(0));
-                gyr_data_list.add(sensorUtil.getGyrData(0));
+//                ori_data_list.add(sensorUtil.getOriData(0));
+//                acc_data_list.add(sensorUtil.getAccData(0));
+//                mag_data_list.add(sensorUtil.getMagData(0));
+//                gyr_data_list.add(sensorUtil.getGyrData(0));
 
 
 
@@ -302,7 +304,7 @@ public class MediaRecorderActivity extends AppCompatActivity{
         }
 
         countTime();
-        sensorUtil.init();
+        //sensorUtil.init();
     }
 
     private void stopRecord() {
@@ -325,7 +327,7 @@ public class MediaRecorderActivity extends AppCompatActivity{
         new Thread(new Runnable() {
             @Override
             public void run() {
-                boolean flag = saveData();
+                boolean flag = true;//saveData();
                 Message msg = Message.obtain();
                 msg.what = 1;
                 msg.obj = flag;
@@ -479,10 +481,12 @@ public class MediaRecorderActivity extends AppCompatActivity{
                 mediaRecorder.stop();
                 mediaRecorder.reset();
                 mediaRecorder.release();
+                mCamera.stopPreview();
+                mCamera.release();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        sensorUtil.stop();
+        //sensorUtil.stop();
     }
 }

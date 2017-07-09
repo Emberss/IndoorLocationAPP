@@ -152,11 +152,11 @@ public class editphoto extends Activity {
                     for (int i = 0; i < Data.imgs.size(); ++i) {
                         tmp.add(Utils.resizeBitmap(Data.imgs.get(i), w, h));
                     }
-                    Data.imgs = tmp;
-                    for (int i = 0; i < Data.imgs.size(); ++i) {
+                    //Data.imgs = tmp;
+                    for (int i = 0; i < tmp.size(); ++i) {
                         String path = Data.getPictureSavePath();
                         String name = (i+1)+".png";
-                        Utils.saveBitmap(Data.imgs.get(i), path, name);
+                        Utils.saveBitmap(tmp.get(i), path, name);
                     }
                     Utils.setToast(editphoto.this, "修改成功!");
                 }

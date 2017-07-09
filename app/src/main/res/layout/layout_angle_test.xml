@@ -8,7 +8,8 @@
     <ImageView
         android:layout_width="300dp"
         android:layout_height="300dp"
-        android:src="@mipmap/test"/>
+        android:src="@mipmap/test"
+        android:visibility="gone"/>
 
     <LinearLayout
         android:orientation="horizontal"
@@ -41,6 +42,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="保存显示"/>
+        <Button
+            android:id="@+id/data"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="数据采集"/>
     </LinearLayout>
 
     <LinearLayout

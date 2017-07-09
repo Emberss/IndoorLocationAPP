@@ -6,6 +6,7 @@
 
     <color name="button_press">#6495ED</color>
     <color name="button_not_press">#63B8FF</color>
+    <color name="size">#6063B8FF</color>
 
     <color name="white">#ffffFF</color>
     <color name="black">#000000</color>

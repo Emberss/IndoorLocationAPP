@@ -375,7 +375,7 @@ public class MapView extends View {
                         }
                         float scale = (float) (curDis / preDis);
                         Log.v("scale", scale + "#####" + mScale);
-                        if (mScale > 0.7) showing = true;
+                        if (mScale > 0.5) showing = true;
                         else showing = false;
                         if ((scale >= 1 && mScale < mMaxScale)
                                 || (scale <= 1 && mScale > mMinScale)) {
@@ -410,7 +410,7 @@ public class MapView extends View {
 
 
     private boolean firstLoading = true;
-    private boolean showing = false;
+    private boolean showing = true;
     private Map<String, Pair> dataMap;
     private List<String> indexs = new ArrayList<>();
     private List<LocationSymbol> symbols = new ArrayList<>();
